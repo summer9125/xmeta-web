@@ -244,11 +244,9 @@
         </div>
     </nav>
 
+    <script src="api.js"></script>
     <script>
-        // 数据结构定义（符合技术文档 v1.0）
-        const API_CONFIG = { appId: 'a134eb307ad7429a9c5acd057f3de519', baseUrl: 'https://xmeta.x-metash.cn/api' };
-        
-        // 模拟数据（后续替换为真实 API 数据）
+        // 模拟数据（API 不可用时使用）
         const mockData = {
             summary: { totalMarketCap: 32.07, totalVolume: 43363, alertCount: 37 },
             collections: [
@@ -295,8 +293,9 @@
             return date.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
-        function renderHotCollections() {
-            document.getElementById('hotCollections').innerHTML = mockData.collections.map(c => `
+        function renderHotCollections(collections = []) {
+            if (!collections || collections.length === 0) collections = mockData.collections;
+            document.getElementById('hotCollections').innerHTML = collections.map(c => `
                 <div class="list-item">
                     <div class="item-left">
                         <div class="item-icon">🎨</div>
@@ -313,8 +312,9 @@
             `).join('');
         }
 
-        function renderRecentTransactions() {
-            document.getElementById('recentTransactions').innerHTML = mockData.transactions.map(t => `
+        function renderRecentTransactions(transactions = []) {
+            if (!transactions || transactions.length === 0) transactions = mockData.transactions;
+            document.getElementById('recentTransactions').innerHTML = transactions.map(t => `
                 <div class="list-item">
                     <div class="item-left">
                         <div class="item-icon" style="background:linear-gradient(135deg,#10b981,#059669)">💰</div>
@@ -331,8 +331,9 @@
             `).join('');
         }
 
-        function renderTransactionsTable() {
-            document.getElementById('transactionsTable').innerHTML = mockData.transactions.map(t => `
+        function renderTransactionsTable(transactions = []) {
+            if (!transactions || transactions.length === 0) transactions = mockData.transactions;
+            document.getElementById('transactionsTable').innerHTML = transactions.map(t => `
                 <tr>
                     <td>${formatTime(t.tradeTime)}</td>
                     <td>${t.collectionName}</td>
@@ -344,8 +345,8 @@
             `).join('');
         }
 
-        function renderOrdersTable() {
-            let orders = mockData.orders;
+        function renderOrdersTable(orders = []) {
+            if (!orders || orders.length === 0) orders = mockData.orders;
             if (currentOrderType !== 'all') {
                 orders = orders.filter(o => o.type === currentOrderType);
             }
@@ -361,8 +362,9 @@
             `).join('');
         }
 
-        function renderCollections() {
-            document.getElementById('collectionsList').innerHTML = mockData.collections.map(c => `
+        function renderCollections(collections = []) {
+            if (!collections || collections.length === 0) collections = mockData.collections;
+            document.getElementById('collectionsList').innerHTML = collections.map(c => `
                 <div class="list-item">
                     <div class="item-left">
                         <div class="item-icon">🎨</div>
@@ -387,16 +389,43 @@
             document.getElementById('orderUpdateTime').textContent = `数据更新于：${timeStr}`;
         }
 
+        let gData = { collections: [], transactions: [], orders: [] };
+        
+        async function fetchRealData() {
+            try {
+                // 尝试从 API 获取真实数据
+                const [collections, transactions, orders] = await Promise.all([
+                    window.XMetaAPI?.getCollections?.(null, 20).catch(() => null),
+                    window.XMetaAPI?.getTransactions?.(null, 50).catch(() => null),
+                    window.XMetaAPI?.getOrders?.(null, null, 50).catch(() => null)
+                ]);
+                
+                if (collections) gData.collections = collections.list || collections;
+                if (transactions) gData.transactions = transactions.list || transactions;
+                if (orders) gData.orders = orders.list || orders;
+                
+                console.log('✅ 真实数据加载成功');
+                return true;
+            } catch (error) {
+                console.warn('⚠️ API 数据加载失败，使用模拟数据');
+                return false;
+            }
+        }
+        
         async function refreshData() {
             updateUpdateTime();
-            renderHotCollections();
-            renderRecentTransactions();
-            renderTransactionsTable();
-            renderOrdersTable();
-            renderCollections();
             
-            // 后续接入真实 API
-            // await fetchRealData();
+            // 尝试获取真实数据
+            const success = await fetchRealData();
+            
+            // 使用真实数据或模拟数据
+            const data = success ? gData : mockData;
+            
+            renderHotCollections(data.collections);
+            renderRecentTransactions(data.transactions);
+            renderTransactionsTable(data.transactions);
+            renderOrdersTable(data.orders);
+            renderCollections(data.collections);
         }
 
         // 初始化
