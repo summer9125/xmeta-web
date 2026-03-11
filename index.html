@@ -5,456 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no">
-    <title>XMeta 数字藏品数据分析平台</title>
+    <title>XMeta 数字藏品数据分析系统</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         :root {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #ffffff;
-            --primary: #4f46e5;
-            --primary-light: #818cf8;
-            --success: #10b981;
-            --success-light: #a7f3d0;
-            --danger: #ef4444;
-            --danger-light: #fecaca;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-            --border: #e5e7eb;
-            --shadow: 0 1px 3px rgba(0,0,0,0.05);
-            --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --bg-primary: #f5f7fa; --bg-secondary: #ffffff; --primary: #4f46e5; --primary-light: #818cf8;
+            --success: #10b981; --success-light: #a7f3d0; --danger: #ef4444; --danger-light: #fecaca;
+            --text-primary: #1f2937; --text-secondary: #6b7280; --text-tertiary: #9ca3af; --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.05); --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            -webkit-text-size-adjust: 100%;
-            padding-top: var(--safe-top);
-            padding-bottom: var(--safe-bottom);
-        }
-        
-        /* 顶部导航 */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: calc(12px + var(--safe-top)) 20px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .logo-icon {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        
-        .logo-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .nav-item {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        
-        .nav-item:hover {
-            background: var(--bg-primary);
-            color: var(--primary);
-        }
-        
-        .nav-item.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        /* 主容器 */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px 16px;
-        }
-        
-        @media (min-width: 768px) {
-            .container { padding: 32px; }
-        }
-        
-        /* 页面标题 */
-        .page-header {
-            margin-bottom: 24px;
-        }
-        
-        .page-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-        
-        .page-subtitle {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        
-        /* 统计卡片区 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        
-        @media (min-width: 640px) {
-            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        }
-        
-        .stat-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-        
-        @media (min-width: 640px) {
-            .stat-card { padding: 24px; border-radius: 16px; }
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        
-        @media (min-width: 640px) {
-            .stat-value { font-size: 36px; }
-        }
-        
-        .stat-trend {
-            font-size: 12px;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .trend-up { color: var(--success); }
-        .trend-down { color: var(--danger); }
-        
-        /* 内容区块 */
-        .section {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 16px;
-        }
-        
-        @media (min-width: 640px) {
-            .section { padding: 24px; border-radius: 16px; margin-bottom: 24px; }
-        }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        /* 表格样式 */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        
-        .data-table th {
-            text-align: left;
-            padding: 12px;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            font-weight: 500;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .data-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .data-table tr:hover {
-            background: var(--bg-primary);
-        }
-        
-        /* 列表项 */
-        .list-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px;
-            background: var(--bg-primary);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .list-item:hover {
-            background: white;
-            box-shadow: var(--shadow);
-        }
-        
-        .list-item:last-child {
-            margin-bottom: 0;
-        }
-        
-        .item-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .item-icon {
-            width: 44px; height: 44px;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        
-        .item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        
-        .item-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .item-meta {
-            font-size: 11px;
-            color: var(--text-tertiary);
-        }
-        
-        .item-right {
-            text-align: right;
-        }
-        
-        .item-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .item-change {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-        
-        /* 底部导航 */
-        .bottom-nav {
-            display: flex;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid var(--border);
-            padding: 8px 0 calc(8px + var(--safe-bottom));
-            z-index: 100;
-            justify-content: space-around;
-        }
-        
-        @media (min-width: 1024px) {
-            .bottom-nav { display: none; }
-        }
-        
-        .bottom-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 16px;
-            color: var(--text-secondary);
-            font-size: 11px;
-            cursor: pointer;
-        }
-        
-        .bottom-nav-item.active {
-            color: var(--primary);
-        }
-        
-        /* 页面切换 */
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        /* 标签页 */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            overflow-x: auto;
-        }
-        
-        .tab {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-        
-        .tab.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        /* 徽章 */
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-        
-        .badge-success {
-            background: var(--success-light);
-            color: var(--success);
-        }
-        
-        .badge-danger {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-        
-        /* 加载动画 */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-        
-        .loading-spinner {
-            width: 40px; height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; -webkit-text-size-adjust: 100%; padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+        .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: calc(12px+var(--safe-top)) 20px 12px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .logo-text { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+        .nav-menu { display: flex; gap: 8px; }
+        .nav-item { padding: 8px 16px; border-radius: 8px; font-size: 14px; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .nav-item:hover { background: var(--bg-primary); color: var(--primary); }
+        .nav-item.active { background: var(--primary); color: white; }
+        @media (max-width: 768px) { .nav-menu { display: none; } }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px 16px; }
+        @media (min-width: 768px) { .container { padding: 32px; } }
+        .page-header { margin-bottom: 24px; }
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+        .page-subtitle { font-size: 14px; color: var(--text-secondary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 24px; }
+        @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4,1fr); gap: 20px; } }
+        .stat-card { background: var(--bg-secondary); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        @media (min-width: 640px) { .stat-card { padding: 24px; border-radius: 16px; } }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--text-primary); }
+        @media (min-width: 640px) { .stat-value { font-size: 36px; } }
+        .stat-trend { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+        .trend-up { color: var(--success); } .trend-down { color: var(--danger); }
+        .section { background: var(--bg-secondary); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px; }
+        @media (min-width: 640px) { .section { padding: 24px; border-radius: 16px; margin-bottom: 24px; } }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+        .section-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; overflow-x: auto; display: block; }
+        .data-table thead { display: table-header-group; }
+        .data-table tbody { display: table-row-group; }
+        @media (max-width: 640px) { .data-table { font-size: 12px; } }
+        .data-table th { text-align: left; padding: 12px; background: var(--bg-primary); color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        .data-table td { padding: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        .data-table tr:hover { background: var(--bg-primary); }
+        .list-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--bg-primary); border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .list-item:hover { background: white; box-shadow: var(--shadow); }
+        .list-item:last-child { margin-bottom: 0; }
+        .item-left { display: flex; align-items: center; gap: 12px; }
+        .item-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .item-info { display: flex; flex-direction: column; gap: 4px; }
+        .item-name { font-weight: 600; font-size: 14px; }
+        .item-meta { font-size: 11px; color: var(--text-tertiary); }
+        .item-right { text-align: right; }
+        .item-price { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .item-change { font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+        .badge-success { background: var(--success-light); color: var(--success); }
+        .badge-danger { background: var(--danger-light); color: var(--danger); }
+        .badge-warning { background: #fef3c7; color: #d97706; }
+        .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 8px 0 calc(8px+var(--safe-bottom)); z-index: 100; justify-content: space-around; }
+        @media (min-width: 1024px) { .bottom-nav { display: none; } }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; color: var(--text-secondary); font-size: 11px; cursor: pointer; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .page { display: none; }
+        .page.active { display: block; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+        .tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; background: var(--bg-primary); color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
+        .tab.active { background: var(--primary); color: white; }
+        .loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .refresh-btn { background: var(--text-primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+        .refresh-btn:active { transform: scale(0.95); }
+        .status-badge { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--success-light); border-radius: 20px; font-size: 13px; color: var(--success); font-weight: 500; }
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .update-time { font-size: 12px; color: var(--text-tertiary); margin-top: 8px; }
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
     <header class="header">
         <div class="logo">
             <div class="logo-icon">📊</div>
             <div class="logo-text">XMeta</div>
         </div>
         <nav class="nav-menu" id="navMenu">
-            <div class="nav-item active" data-page="home">首页</div>
-            <div class="nav-item" data-page="collections">藏品</div>
+            <div class="nav-item active" data-page="home">概览</div>
             <div class="nav-item" data-page="transactions">成交</div>
             <div class="nav-item" data-page="orders">委托</div>
-            <div class="nav-item" data-page="analysis">分析</div>
+            <div class="nav-item" data-page="collections">藏品</div>
         </nav>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>运行正常</span>
+            </div>
+            <button class="refresh-btn" onclick="refreshData()">🔄 刷新</button>
+        </div>
     </header>
 
     <main class="container">
         <!-- 首页 -->
         <div id="homePage" class="page active">
             <div class="page-header">
-                <h1 class="page-title">数据概览</h1>
+                <h1 class="page-title">数字藏品监控</h1>
                 <p class="page-subtitle">实时追踪全网数字藏品交易数据</p>
+                <div class="update-time" id="updateTime">数据更新于：--</div>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">总市值</div>
-                    <div class="stat-value">¥30.5 亿</div>
+                    <div class="stat-value" id="totalCap">¥32.07 亿</div>
                     <div class="stat-trend trend-up">↑ +2.3%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">24h 成交量</div>
-                    <div class="stat-value">35,845</div>
+                    <div class="stat-label">24h 交易量</div>
+                    <div class="stat-value" id="totalVolume">43,363</div>
                     <div class="stat-trend trend-up">↑ +15.3%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">24h 成交额</div>
-                    <div class="stat-value">¥1.28 亿</div>
-                    <div class="stat-trend trend-down">↓ -3.2%</div>
+                    <div class="stat-label">告警</div>
+                    <div class="stat-value" id="alertCount">37</div>
+                    <div class="stat-trend trend-down">↓ 3</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">活跃藏品</div>
-                    <div class="stat-value">1,284</div>
-                    <div class="stat-trend trend-up">↑ +12</div>
+                    <div class="stat-label">覆盖平台</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-trend" style="background:#e0e7ff;color:var(--primary)">+2</div>
                 </div>
             </div>
 
@@ -468,28 +147,9 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">📈 最新成交</div>
+                    <a href="#" onclick="switchPage('transactions')" style="font-size:13px;color:var(--primary);text-decoration:none">查看全部 →</a>
                 </div>
                 <div id="recentTransactions"></div>
-            </div>
-        </div>
-
-        <!-- 藏品页 -->
-        <div id="collectionsPage" class="page">
-            <div class="page-header">
-                <h1 class="page-title">藏品列表</h1>
-                <p class="page-subtitle">全平台藏品数据汇总</p>
-            </div>
-
-            <div class="tabs">
-                <div class="tab active">全部</div>
-                <div class="tab">鲸探</div>
-                <div class="tab">幻核</div>
-                <div class="tab">小红书</div>
-                <div class="tab">抖音</div>
-            </div>
-
-            <div class="section">
-                <div id="collectionsList"></div>
             </div>
         </div>
 
@@ -498,8 +158,8 @@
             <div class="page-header">
                 <h1 class="page-title">成交记录</h1>
                 <p class="page-subtitle">实时交易数据监控</p>
+                <div class="update-time" id="txUpdateTime">数据更新于：--</div>
             </div>
-
             <div class="section">
                 <table class="data-table">
                     <thead>
@@ -522,9 +182,14 @@
             <div class="page-header">
                 <h1 class="page-title">委托记录</h1>
                 <p class="page-subtitle">挂单数据监控</p>
+                <div class="update-time" id="orderUpdateTime">数据更新于：--</div>
             </div>
-
             <div class="section">
+                <div class="tabs">
+                    <div class="tab active" data-type="all">全部</div>
+                    <div class="tab" data-type="buy">买入</div>
+                    <div class="tab" data-type="sell">卖出</div>
+                </div>
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -541,25 +206,20 @@
             </div>
         </div>
 
-        <!-- 分析页 -->
-        <div id="analysisPage" class="page">
+        <!-- 藏品页 -->
+        <div id="collectionsPage" class="page">
             <div class="page-header">
-                <h1 class="page-title">数据分析</h1>
-                <p class="page-subtitle">深度数据分析与趋势预测</p>
+                <h1 class="page-title">藏品列表</h1>
+                <p class="page-subtitle">全平台藏品数据汇总</p>
             </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">📊 板块分布</div>
-                </div>
-                <div id="sectorAnalysis"></div>
+            <div class="tabs">
+                <div class="tab active">全部</div>
+                <div class="tab">鲸探</div>
+                <div class="tab">幻核</div>
+                <div class="tab">小红书</div>
             </div>
-
             <div class="section">
-                <div class="section-header">
-                    <div class="section-title">📈 价格趋势</div>
-                </div>
-                <div id="priceTrend"></div>
+                <div id="collectionsList"></div>
             </div>
         </div>
     </main>
@@ -568,11 +228,7 @@
     <nav class="bottom-nav">
         <div class="bottom-nav-item active" data-page="home">
             <span>📊</span>
-            <span>首页</span>
-        </div>
-        <div class="bottom-nav-item" data-page="collections">
-            <span>🎨</span>
-            <span>藏品</span>
+            <span>概览</span>
         </div>
         <div class="bottom-nav-item" data-page="transactions">
             <span>💰</span>
@@ -582,115 +238,105 @@
             <span>📋</span>
             <span>委托</span>
         </div>
-        <div class="bottom-nav-item" data-page="analysis">
-            <span>📈</span>
-            <span>分析</span>
+        <div class="bottom-nav-item" data-page="collections">
+            <span>🎨</span>
+            <span>藏品</span>
         </div>
     </nav>
 
     <script>
-        // 模拟数据
+        // 数据结构定义（符合技术文档 v1.0）
+        const API_CONFIG = { appId: 'a134eb307ad7429a9c5acd057f3de519', baseUrl: 'https://xmeta.x-metash.cn/api' };
+        
+        // 模拟数据（后续替换为真实 API 数据）
         const mockData = {
+            summary: { totalMarketCap: 32.07, totalVolume: 43363, alertCount: 37 },
             collections: [
-                { id: 1, name: '朱墨三色锦鲤', platform: '鲸探', floorPrice: 1.00, change: 2.5, volume: 422026, totalValue: 422026 },
-                { id: 2, name: '黑白双色锦鲤', platform: '鲸探', floorPrice: 1.42, change: -1.2, volume: 159059, totalValue: 225864 },
-                { id: 3, name: '金刚菩提子', platform: '鲸探', floorPrice: 1.11, change: 0.8, volume: 40101, totalValue: 44512 },
-                { id: 4, name: '小金猫', platform: '鲸探', floorPrice: 30.18, change: 5.2, volume: 10331, totalValue: 311790 },
-                { id: 5, name: '长春园铜麒麟', platform: '鲸探', floorPrice: 106.0, change: -2.1, volume: 254, totalValue: 26924 }
+                { id: '1', name: '朱墨三色锦鲤', platform: '鲸探', floorPrice: 1.00, change24h: 2.5, volume24h: 422026, issuePrice: 0.5, holders: 15234, listedCount: 421478 },
+                { id: '2', name: '黑白双色锦鲤', platform: '鲸探', floorPrice: 1.42, change24h: -1.2, volume24h: 158878, issuePrice: 0.8, holders: 8932, listedCount: 158878 },
+                { id: '3', name: '金刚菩提子', platform: '鲸探', floorPrice: 1.11, change24h: 0.8, volume24h: 39034, issuePrice: 0.6, holders: 5621, listedCount: 39034 },
+                { id: '4', name: '小金猫', platform: '鲸探', floorPrice: 30.18, change24h: 5.2, volume24h: 10353, issuePrice: 28.0, holders: 3421, listedCount: 10353 },
+                { id: '5', name: '长春园铜麒麟', platform: '鲸探', floorPrice: 106.0, change24h: -2.1, volume24h: 177, issuePrice: 99.0, holders: 89, listedCount: 177 }
             ],
             transactions: [
-                { time: '18:32:15', name: '朱墨三色锦鲤', price: 1.02, amount: 5, total: 5.10, platform: '鲸探' },
-                { time: '18:31:48', name: '小金猫', price: 30.50, amount: 2, total: 61.00, platform: '鲸探' },
-                { time: '18:30:22', name: '黑白双色锦鲤', price: 1.40, amount: 10, total: 14.00, platform: '鲸探' },
-                { time: '18:29:55', name: '金刚菩提子', price: 1.11, amount: 3, total: 3.33, platform: '鲸探' },
-                { time: '18:28:30', name: '长春园铜麒麟', price: 105.00, amount: 1, total: 105.00, platform: '鲸探' }
+                { id: 'tx1', collectionId: '1', collectionName: '朱墨三色锦鲤', price: 1.02, amount: 5, total: 5.10, platform: '鲸探', tradeTime: '2026-03-11T18:32:15+08:00' },
+                { id: 'tx2', collectionId: '4', collectionName: '小金猫', price: 30.50, amount: 2, total: 61.00, platform: '鲸探', tradeTime: '2026-03-11T18:31:48+08:00' },
+                { id: 'tx3', collectionId: '2', collectionName: '黑白双色锦鲤', price: 1.40, amount: 10, total: 14.00, platform: '鲸探', tradeTime: '2026-03-11T18:30:22+08:00' },
+                { id: 'tx4', collectionId: '3', collectionName: '金刚菩提子', price: 1.11, amount: 3, total: 3.33, platform: '鲸探', tradeTime: '2026-03-11T18:29:55+08:00' },
+                { id: 'tx5', collectionId: '5', collectionName: '长春园铜麒麟', price: 105.00, amount: 1, total: 105.00, platform: '鲸探', tradeTime: '2026-03-11T18:28:30+08:00' }
             ],
             orders: [
-                { time: '18:33:00', type: '买入', name: '朱墨三色锦鲤', price: 1.00, amount: 10, status: 'pending' },
-                { time: '18:32:45', type: '卖出', name: '小金猫', price: 31.00, amount: 5, status: 'pending' },
-                { time: '18:32:20', type: '买入', name: '黑白双色锦鲤', price: 1.38, amount: 20, status: 'filled' },
-                { time: '18:31:55', type: '卖出', name: '金刚菩提子', price: 1.15, amount: 15, status: 'pending' },
-                { time: '18:31:30', type: '买入', name: '长春园铜麒麟', price: 104.00, amount: 2, status: 'filled' }
+                { id: 'o1', collectionId: '1', collectionName: '朱墨三色锦鲤', type: 'buy', price: 1.00, amount: 10, filledAmount: 0, status: 'pending', platform: '鲸探', createdAt: '2026-03-11T18:33:00+08:00' },
+                { id: 'o2', collectionId: '4', collectionName: '小金猫', type: 'sell', price: 31.00, amount: 5, filledAmount: 0, status: 'pending', platform: '鲸探', createdAt: '2026-03-11T18:32:45+08:00' },
+                { id: 'o3', collectionId: '2', collectionName: '黑白双色锦鲤', type: 'buy', price: 1.38, amount: 20, filledAmount: 20, status: 'filled', platform: '鲸探', createdAt: '2026-03-11T18:32:20+08:00' },
+                { id: 'o4', collectionId: '3', collectionName: '金刚菩提子', type: 'sell', price: 1.15, amount: 15, filledAmount: 0, status: 'pending', platform: '鲸探', createdAt: '2026-03-11T18:31:55+08:00' },
+                { id: 'o5', collectionId: '5', collectionName: '长春园铜麒麟', type: 'buy', price: 104.00, amount: 2, filledAmount: 2, status: 'filled', platform: '鲸探', createdAt: '2026-03-11T18:31:30+08:00' }
             ]
         };
 
-        // 页面切换
+        let currentOrderType = 'all';
+
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
-            
             document.getElementById(pageId + 'Page').classList.add('active');
             document.querySelector(`.nav-item[data-page="${pageId}"]`)?.classList.add('active');
             document.querySelector(`.bottom-nav-item[data-page="${pageId}"]`)?.classList.add('active');
         }
 
-        // 渲染热门藏品
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function formatDateTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
         function renderHotCollections() {
-            document.getElementById('hotCollections').innerHTML = mockData.collections.slice(0, 5).map(c => `
-                <div class="list-item" onclick="switchPage('collections')">
+            document.getElementById('hotCollections').innerHTML = mockData.collections.map(c => `
+                <div class="list-item">
                     <div class="item-left">
                         <div class="item-icon">🎨</div>
                         <div class="item-info">
                             <div class="item-name">${c.name}</div>
-                            <div class="item-meta">${c.platform} · 成交 ${c.volume.toLocaleString()}</div>
+                            <div class="item-meta">${c.platform} · 持有 ${c.holders.toLocaleString()}</div>
                         </div>
                     </div>
                     <div class="item-right">
                         <div class="item-price">¥${c.floorPrice.toFixed(2)}</div>
-                        <div class="item-change" style="background: ${c.change >= 0 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${c.change >= 0 ? 'var(--success)' : 'var(--danger)'}">
-                            ${c.change >= 0 ? '↑' : '↓'} ${Math.abs(c.change)}%
-                        </div>
+                        <div class="item-change" style="background:${c.change24h>=0?'var(--success-light)':'var(--danger-light)'};color:${c.change24h>=0?'var(--success)':'var(--danger)'}">${c.change24h>=0?'↑':'↓'}${Math.abs(c.change24h)}%</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 渲染最新成交
         function renderRecentTransactions() {
             document.getElementById('recentTransactions').innerHTML = mockData.transactions.map(t => `
                 <div class="list-item">
                     <div class="item-left">
-                        <div class="item-icon" style="background: linear-gradient(135deg, #10b981, #059669);">💰</div>
+                        <div class="item-icon" style="background:linear-gradient(135deg,#10b981,#059669)">💰</div>
                         <div class="item-info">
-                            <div class="item-name">${t.name}</div>
-                            <div class="item-meta">${t.time} · ${t.platform}</div>
+                            <div class="item-name">${t.collectionName}</div>
+                            <div class="item-meta">${formatTime(t.tradeTime)} · ${t.platform}</div>
                         </div>
                     </div>
                     <div class="item-right">
                         <div class="item-price">¥${t.total.toFixed(2)}</div>
-                        <div class="item-meta">${t.amount} 份 × ¥${t.price.toFixed(2)}</div>
+                        <div class="item-meta">${t.amount}份 × ¥${t.price.toFixed(2)}</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 渲染藏品列表
-        function renderCollections() {
-            document.getElementById('collectionsList').innerHTML = mockData.collections.map(c => `
-                <div class="list-item">
-                    <div class="item-left">
-                        <div class="item-icon">🎨</div>
-                        <div class="item-info">
-                            <div class="item-name">${c.name}</div>
-                            <div class="item-meta">${c.platform} · 总量 ${c.volume.toLocaleString()}</div>
-                        </div>
-                    </div>
-                    <div class="item-right">
-                        <div class="item-price">¥${c.floorPrice.toFixed(2)}</div>
-                        <div class="item-meta">市值 ¥${(c.totalValue/10000).toFixed(1)}万</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 渲染成交表格
         function renderTransactionsTable() {
             document.getElementById('transactionsTable').innerHTML = mockData.transactions.map(t => `
                 <tr>
-                    <td>${t.time}</td>
-                    <td>${t.name}</td>
-                    <td style="color: var(--primary); font-weight: 600;">¥${t.price.toFixed(2)}</td>
+                    <td>${formatTime(t.tradeTime)}</td>
+                    <td>${t.collectionName}</td>
+                    <td style="color:var(--primary);font-weight:600">¥${t.price.toFixed(2)}</td>
                     <td>${t.amount}</td>
                     <td>¥${t.total.toFixed(2)}</td>
                     <td><span class="badge badge-success">${t.platform}</span></td>
@@ -698,39 +344,79 @@
             `).join('');
         }
 
-        // 渲染委托表格
         function renderOrdersTable() {
-            document.getElementById('ordersTable').innerHTML = mockData.orders.map(o => `
+            let orders = mockData.orders;
+            if (currentOrderType !== 'all') {
+                orders = orders.filter(o => o.type === currentOrderType);
+            }
+            document.getElementById('ordersTable').innerHTML = orders.map(o => `
                 <tr>
-                    <td>${o.time}</td>
-                    <td style="color: ${o.type === '买入' ? 'var(--success)' : 'var(--danger)'}">${o.type}</td>
-                    <td>${o.name}</td>
-                    <td style="color: var(--primary); font-weight: 600;">¥${o.price.toFixed(2)}</td>
+                    <td>${formatTime(o.createdAt)}</td>
+                    <td style="color:${o.type==='buy'?'var(--success)':'var(--danger)'}">${o.type==='buy'?'买入':'卖出'}</td>
+                    <td>${o.collectionName}</td>
+                    <td style="color:var(--primary);font-weight:600">¥${o.price.toFixed(2)}</td>
                     <td>${o.amount}</td>
-                    <td><span class="badge ${o.status === 'filled' ? 'badge-success' : ''}">${o.status === 'filled' ? '已成交' : '挂单中'}</span></td>
+                    <td><span class="badge ${o.status==='filled'?'badge-success':o.status==='pending'?'badge-warning':'badge-danger'}">${o.status==='filled'?'已成交':o.status==='pending'?'挂单中':'已取消'}</span></td>
                 </tr>
             `).join('');
         }
 
-        // 初始化
-        function init() {
-            renderHotCollections();
-            renderRecentTransactions();
-            renderCollections();
-            renderTransactionsTable();
-            renderOrdersTable();
-
-            // 导航事件
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', () => switchPage(item.dataset.page));
-            });
-
-            document.querySelectorAll('.bottom-nav-item').forEach(item => {
-                item.addEventListener('click', () => switchPage(item.dataset.page));
-            });
+        function renderCollections() {
+            document.getElementById('collectionsList').innerHTML = mockData.collections.map(c => `
+                <div class="list-item">
+                    <div class="item-left">
+                        <div class="item-icon">🎨</div>
+                        <div class="item-info">
+                            <div class="item-name">${c.name}</div>
+                            <div class="item-meta">${c.platform} · 发行价 ¥${c.issuePrice.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-price">¥${c.floorPrice.toFixed(2)}</div>
+                        <div class="item-meta">挂单 ${c.listedCount.toLocaleString()}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        init();
+        function updateUpdateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('updateTime').textContent = `数据更新于：${timeStr}`;
+            document.getElementById('txUpdateTime').textContent = `数据更新于：${timeStr}`;
+            document.getElementById('orderUpdateTime').textContent = `数据更新于：${timeStr}`;
+        }
+
+        async function refreshData() {
+            updateUpdateTime();
+            renderHotCollections();
+            renderRecentTransactions();
+            renderTransactionsTable();
+            renderOrdersTable();
+            renderCollections();
+            
+            // 后续接入真实 API
+            // await fetchRealData();
+        }
+
+        // 初始化
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => switchPage(item.dataset.page));
+        });
+        document.querySelectorAll('.bottom-nav-item').forEach(item => {
+            item.addEventListener('click', () => switchPage(item.dataset.page));
+        });
+        document.querySelectorAll('.ordersPage .tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.ordersPage .tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentOrderType = tab.dataset.type;
+                renderOrdersTable();
+            });
+        });
+
+        refreshData();
+        setInterval(refreshData, 60000); // 每分钟刷新
     </script>
 </body>
 </html>
