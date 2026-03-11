@@ -6,22 +6,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    <meta name="HandheldFriendly" content="true">
-    <meta name="MobileOptimized" content="320">
-    <title>XMeta 数字藏品分析系统</title>
+    <title>XMeta 数字藏品数据分析平台</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         :root {
             --bg-primary: #f5f7fa;
             --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
             --primary: #4f46e5;
             --primary-light: #818cf8;
             --success: #10b981;
             --success-light: #a7f3d0;
-            --warning: #f59e0b;
-            --warning-light: #fde68a;
             --danger: #ef4444;
             --danger-light: #fecaca;
             --text-primary: #1f2937;
@@ -29,13 +24,12 @@
             --text-tertiary: #9ca3af;
             --border: #e5e7eb;
             --shadow: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
@@ -73,117 +67,37 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            flex-shrink: 0;
         }
         
         .logo-text {
             font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
-            white-space: nowrap;
         }
         
-        .logo-subtitle {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            margin-top: 2px;
-            display: none;
+        .nav-menu {
+            display: flex;
+            gap: 8px;
         }
         
-        @media (min-width: 768px) {
-            .logo-subtitle { display: block; }
-            .logo-text { font-size: 18px; }
-        }
-        
-        .nav-links {
-            display: none;
-        }
-        
-        @media (min-width: 1024px) {
-            .nav-links {
-                display: flex;
-                gap: 8px;
-            }
-        }
-        
-        .nav-link {
+        .nav-item {
             padding: 8px 16px;
             border-radius: 8px;
             font-size: 14px;
             color: var(--text-secondary);
-            text-decoration: none;
+            cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
         }
         
-        .nav-link:hover {
+        .nav-item:hover {
             background: var(--bg-primary);
             color: var(--primary);
         }
         
-        .nav-link.active {
+        .nav-item.active {
             background: var(--primary);
             color: white;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .status-badge {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            background: var(--success-light);
-            border-radius: 20px;
-            font-size: 13px;
-            color: var(--success);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        
-        @media (min-width: 768px) {
-            .status-badge { display: flex; }
-        }
-        
-        .status-dot {
-            width: 8px; height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .refresh-btn {
-            background: var(--text-primary);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 44px;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .refresh-btn:active {
-            transform: scale(0.95);
-        }
-        
-        @media (min-width: 768px) {
-            .refresh-btn { padding: 10px 20px; }
         }
         
         /* 主容器 */
@@ -202,10 +116,6 @@
             margin-bottom: 24px;
         }
         
-        @media (min-width: 768px) {
-            .page-header { margin-bottom: 32px; }
-        }
-        
         .page-title {
             font-size: 24px;
             font-weight: 700;
@@ -213,14 +123,9 @@
             margin-bottom: 8px;
         }
         
-        @media (min-width: 768px) {
-            .page-title { font-size: 28px; }
-        }
-        
         .page-subtitle {
             font-size: 14px;
             color: var(--text-secondary);
-            line-height: 1.6;
         }
         
         /* 统计卡片区 */
@@ -236,117 +141,56 @@
         }
         
         .stat-card {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             border-radius: 12px;
             padding: 16px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            transition: all 0.3s;
         }
         
         @media (min-width: 640px) {
             .stat-card { padding: 24px; border-radius: 16px; }
         }
         
-        .stat-card:active {
-            transform: scale(0.98);
-        }
-        
-        @media (min-width: 640px) {
-            .stat-card:hover {
-                box-shadow: var(--shadow-lg);
-                transform: translateY(-2px);
-            }
-        }
-        
-        .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        
         .stat-label {
             font-size: 12px;
             color: var(--text-secondary);
-            font-weight: 500;
-        }
-        
-        @media (min-width: 640px) {
-            .stat-label { font-size: 13px; margin-bottom: 16px; }
-        }
-        
-        .stat-trend {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        
-        .trend-up {
-            background: var(--success-light);
-            color: var(--success);
-        }
-        
-        .trend-down {
-            background: var(--danger-light);
-            color: var(--danger);
+            margin-bottom: 8px;
         }
         
         .stat-value {
             font-size: 24px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
         }
         
         @media (min-width: 640px) {
-            .stat-value { font-size: 36px; margin-bottom: 8px; }
+            .stat-value { font-size: 36px; }
         }
         
-        .stat-footer {
-            font-size: 11px;
-            color: var(--text-tertiary);
+        .stat-trend {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
-        @media (min-width: 640px) {
-            .stat-footer { font-size: 12px; }
-        }
-        
-        /* 内容网格 */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        
-        @media (min-width: 1024px) {
-            .content-grid {
-                grid-template-columns: 1fr 380px;
-                gap: 24px;
-                margin-bottom: 24px;
-            }
-        }
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
         
         /* 内容区块 */
         .section {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             border-radius: 12px;
             padding: 16px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
+            margin-bottom: 16px;
         }
         
         @media (min-width: 640px) {
-            .section {
-                border-radius: 16px;
-                padding: 24px;
-            }
+            .section { padding: 24px; border-radius: 16px; margin-bottom: 24px; }
         }
         
         .section-header {
@@ -354,45 +198,39 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 12px;
         }
         
         .section-title {
             font-size: 16px;
             font-weight: 600;
-            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .section-actions {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
         }
         
-        .tab-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
+        .data-table th {
+            text-align: left;
+            padding: 12px;
             background: var(--bg-primary);
             color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-height: 36px;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
         }
         
-        .tab-btn:active {
-            transform: scale(0.95);
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
         }
         
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
+        .data-table tr:hover {
+            background: var(--bg-primary);
         }
         
         /* 列表项 */
@@ -404,33 +242,13 @@
             background: var(--bg-primary);
             border-radius: 10px;
             margin-bottom: 10px;
-            transition: all 0.2s;
             cursor: pointer;
-            border: 1px solid transparent;
-            min-height: 72px;
+            transition: all 0.2s;
         }
         
-        @media (min-width: 640px) {
-            .list-item {
-                padding: 16px;
-                border-radius: 12px;
-                margin-bottom: 12px;
-                min-height: 80px;
-            }
-        }
-        
-        .list-item:active {
+        .list-item:hover {
             background: white;
-            border-color: var(--primary);
             box-shadow: var(--shadow);
-        }
-        
-        @media (min-width: 640px) {
-            .list-item:hover {
-                background: white;
-                border-color: var(--primary);
-                box-shadow: var(--shadow);
-            }
         }
         
         .list-item:last-child {
@@ -441,12 +259,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            flex: 1;
-            min-width: 0;
-        }
-        
-        @media (min-width: 640px) {
-            .item-left { gap: 14px; }
         }
         
         .item-icon {
@@ -457,65 +269,32 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            flex-shrink: 0;
-        }
-        
-        .item-icon.success {
-            background: linear-gradient(135deg, var(--success-light), var(--success));
-        }
-        
-        .item-icon.warning {
-            background: linear-gradient(135deg, var(--warning-light), var(--warning));
         }
         
         .item-info {
             display: flex;
             flex-direction: column;
             gap: 4px;
-            flex: 1;
-            min-width: 0;
         }
         
         .item-name {
             font-weight: 600;
             font-size: 14px;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        @media (min-width: 640px) {
-            .item-name { font-size: 15px; }
         }
         
         .item-meta {
             font-size: 11px;
             color: var(--text-tertiary);
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        @media (min-width: 640px) {
-            .item-meta { font-size: 12px; }
         }
         
         .item-right {
             text-align: right;
-            flex-shrink: 0;
-            margin-left: 12px;
         }
         
         .item-price {
             font-size: 16px;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 4px;
-        }
-        
-        @media (min-width: 640px) {
-            .item-price { font-size: 18px; }
         }
         
         .item-change {
@@ -523,210 +302,9 @@
             padding: 4px 8px;
             border-radius: 6px;
             display: inline-block;
-            font-weight: 500;
-            white-space: nowrap;
         }
         
-        @media (min-width: 640px) {
-            .item-change { font-size: 12px; }
-        }
-        
-        /* 进度条 */
-        .progress-bar {
-            height: 8px;
-            background: var(--bg-primary);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        
-        /* 环形图 */
-        .chart-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        @media (min-width: 640px) {
-            .chart-container { gap: 24px; }
-        }
-        
-        .donut-chart {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: conic-gradient(
-                var(--primary) 0deg 120deg,
-                var(--success) 120deg 240deg,
-                var(--warning) 240deg 360deg
-            );
-            position: relative;
-            flex-shrink: 0;
-        }
-        
-        @media (min-width: 640px) {
-            .donut-chart { width: 120px; height: 120px; }
-        }
-        
-        .donut-chart::after {
-            content: attr(data-value);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 700;
-        }
-        
-        @media (min-width: 640px) {
-            .donut-chart::after { width: 80px; height: 80px; font-size: 18px; }
-        }
-        
-        .chart-legend {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-width: 0;
-        }
-        
-        @media (min-width: 640px) {
-            .chart-legend { gap: 12px; }
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        
-        .legend-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .legend-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        
-        .legend-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .legend-value {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-        }
-        
-        /* 数据源开关 */
-        .source-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .source-item:last-child {
-            border-bottom: none;
-        }
-        
-        .source-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-        }
-        
-        .source-name {
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .source-meta {
-            font-size: 11px;
-            color: var(--text-tertiary);
-        }
-        
-        .toggle-switch {
-            width: 44px; height: 24px;
-            background: var(--bg-primary);
-            border-radius: 12px;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.2s;
-            flex-shrink: 0;
-            margin-left: 12px;
-        }
-        
-        .toggle-switch:active {
-            transform: scale(0.95);
-        }
-        
-        .toggle-switch.active {
-            background: var(--primary);
-        }
-        
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px; height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.2s;
-            box-shadow: var(--shadow);
-        }
-        
-        .toggle-switch.active::after {
-            transform: translateX(20px);
-        }
-        
-        /* 加载动画 */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-        
-        .loading-spinner {
-            width: 40px; height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* 底部导航（移动端） */
+        /* 底部导航 */
         .bottom-nav {
             display: flex;
             position: fixed;
@@ -750,396 +328,316 @@
             align-items: center;
             gap: 4px;
             padding: 8px 16px;
-            border-radius: 12px;
             color: var(--text-secondary);
             font-size: 11px;
-            text-decoration: none;
-            min-width: 60px;
-        }
-        
-        .bottom-nav-item:active {
-            transform: scale(0.95);
+            cursor: pointer;
         }
         
         .bottom-nav-item.active {
             color: var(--primary);
-            background: #e0e7ff;
         }
         
-        .bottom-nav-icon {
-            font-size: 20px;
-        }
-        
-        /* 详情页（二级页面） */
-        .detail-page {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--bg-primary);
-            z-index: 200;
-            overflow-y: auto;
+        /* 页面切换 */
+        .page {
             display: none;
         }
         
-        .detail-page.active {
+        .page.active {
             display: block;
         }
         
-        .detail-header {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: calc(12px + var(--safe-top)) 16px 12px;
+        /* 标签页 */
+        .tabs {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .detail-back {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            background: var(--bg-primary);
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .detail-back:active {
-            transform: scale(0.95);
-        }
-        
-        .detail-title {
-            font-size: 17px;
-            font-weight: 600;
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .detail-content {
-            padding: 20px 16px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .detail-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
+            gap: 8px;
             margin-bottom: 16px;
+            overflow-x: auto;
         }
         
-        .detail-stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 16px;
-        }
-        
-        .detail-stat {
+        .tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
             background: var(--bg-primary);
-            padding: 16px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .detail-stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .detail-stat-label {
-            font-size: 12px;
             color: var(--text-secondary);
-            margin-top: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
         }
         
-        .detail-action-btn {
-            width: 100%;
-            padding: 16px;
+        .tab.active {
             background: var(--primary);
             color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
         }
         
-        .detail-action-btn:active {
-            transform: scale(0.98);
-        }
-        
-        /* 来源徽章 */
-        .source-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+        /* 徽章 */
+        .badge {
+            display: inline-block;
             padding: 4px 8px;
-            background: var(--bg-primary);
             border-radius: 6px;
             font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        
+        .badge-danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
             color: var(--text-secondary);
+        }
+        
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <!-- 主页面 -->
-    <div id="mainPage">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">📊</div>
-                <div>
-                    <div class="logo-text">XMeta</div>
-                    <div class="logo-subtitle">数字藏品分析系统</div>
-                </div>
-            </div>
-            <nav class="nav-links">
-                <a href="#" class="nav-link active">概览</a>
-                <a href="#" class="nav-link">藏品</a>
-                <a href="#" class="nav-link">发售</a>
-                <a href="#" class="nav-link">数据源</a>
-            </nav>
-            <div class="header-right">
-                <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span>运行正常</span>
-                </div>
-                <button class="refresh-btn" onclick="refreshData()">🔄 刷新</button>
-            </div>
-        </header>
-
-        <main class="container">
-            <div class="page-header">
-                <h1 class="page-title">数字藏品监控</h1>
-                <p class="page-subtitle">实时追踪全网数字藏品交易数据，提供价格监控、发售提醒与市场趋势分析</p>
-            </div>
-
-            <div id="loading" class="loading">
-                <div class="loading-spinner"></div>
-                <div>正在加载数据...</div>
-            </div>
-
-            <div id="content" style="display: none;">
-                <!-- 统计卡片 -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-label">总市值</span>
-                            <span class="stat-trend trend-up">↑ +2.3%</span>
-                        </div>
-                        <div class="stat-value">¥30.5 亿</div>
-                        <div class="stat-footer">近 24 小时</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-label">24h 交易量</span>
-                            <span class="stat-trend trend-up">↑ +15.3%</span>
-                        </div>
-                        <div class="stat-value">35,845</div>
-                        <div class="stat-footer">笔交易</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-label">告警</span>
-                            <span class="stat-trend trend-down">↓ 3</span>
-                        </div>
-                        <div class="stat-value">37</div>
-                        <div class="stat-footer">需关注</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <span class="stat-label">覆盖平台</span>
-                            <span class="stat-trend" style="background: #e0e7ff; color: var(--primary);">+2</span>
-                        </div>
-                        <div class="stat-value">12</div>
-                        <div class="stat-footer">数据源</div>
-                    </div>
-                </div>
-
-                <!-- 主内容区 -->
-                <div class="content-grid">
-                    <!-- 左侧 -->
-                    <div>
-                        <!-- 热门藏品 -->
-                        <div class="section" style="margin-bottom: 16px;">
-                            <div class="section-header">
-                                <div class="section-title">
-                                    <span>🔥</span>
-                                    <span>热门藏品</span>
-                                </div>
-                                <div class="section-actions">
-                                    <button class="tab-btn active">热度</button>
-                                    <button class="tab-btn">涨幅</button>
-                                    <button class="tab-btn">成交量</button>
-                                </div>
-                            </div>
-                            <div id="collectionList"></div>
-                        </div>
-
-                        <!-- 板块分布 -->
-                        <div class="section">
-                            <div class="section-header">
-                                <div class="section-title">
-                                    <span>📊</span>
-                                    <span>板块分布</span>
-                                </div>
-                                <span style="font-size: 12px; color: var(--text-tertiary);">近 24h</span>
-                            </div>
-                            <div class="chart-container">
-                                <div class="donut-chart" data-value="1,284"></div>
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <div class="legend-left">
-                                            <div class="legend-dot" style="background: var(--primary);"></div>
-                                            <span class="legend-label">基础设施</span>
-                                        </div>
-                                        <span class="legend-value">412</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-left">
-                                            <div class="legend-dot" style="background: var(--success);"></div>
-                                            <span class="legend-label">安全</span>
-                                        </div>
-                                        <span class="legend-value">318</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-left">
-                                            <div class="legend-dot" style="background: var(--warning);"></div>
-                                            <span class="legend-label">政策</span>
-                                        </div>
-                                        <span class="legend-value">241</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-left">
-                                            <div class="legend-dot" style="background: #9ca3af;"></div>
-                                            <span class="legend-label">其他</span>
-                                        </div>
-                                        <span class="legend-value">113</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 右侧 -->
-                    <div>
-                        <!-- 发售日历 -->
-                        <div class="section" style="margin-bottom: 16px;">
-                            <div class="section-header">
-                                <div class="section-title">
-                                    <span>📅</span>
-                                    <span>发售日历</span>
-                                </div>
-                                <a href="#" style="font-size: 12px; color: var(--primary); text-decoration: none;">查看全部</a>
-                            </div>
-                            <div id="releaseList"></div>
-                        </div>
-
-                        <!-- 数据源 -->
-                        <div class="section">
-                            <div class="section-header">
-                                <div class="section-title">
-                                    <span>🔌</span>
-                                    <span>数据源</span>
-                                </div>
-                                <span style="font-size: 12px; color: var(--text-tertiary);">已启用 3 / 4</span>
-                            </div>
-                            <div id="sourceList"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- 底部导航（移动端） -->
-        <nav class="bottom-nav">
-            <a href="#" class="bottom-nav-item active">
-                <span class="bottom-nav-icon">📊</span>
-                <span>概览</span>
-            </a>
-            <a href="#" class="bottom-nav-item">
-                <span class="bottom-nav-icon">🎨</span>
-                <span>藏品</span>
-            </a>
-            <a href="#" class="bottom-nav-item">
-                <span class="bottom-nav-icon">📅</span>
-                <span>发售</span>
-            </a>
-            <a href="#" class="bottom-nav-item">
-                <span class="bottom-nav-icon">🔌</span>
-                <span>数据源</span>
-            </a>
-        </nav>
-    </div>
-
-    <!-- 详情页（二级页面） -->
-    <div id="detailPage" class="detail-page">
-        <div class="detail-header">
-            <button class="detail-back" onclick="closeDetail()">←</button>
-            <div class="detail-title" id="detailTitle">藏品详情</div>
-            <div style="width: 44px;"></div>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div class="logo-text">XMeta</div>
         </div>
-        <div class="detail-content" id="detailContent"></div>
-    </div>
+        <nav class="nav-menu" id="navMenu">
+            <div class="nav-item active" data-page="home">首页</div>
+            <div class="nav-item" data-page="collections">藏品</div>
+            <div class="nav-item" data-page="transactions">成交</div>
+            <div class="nav-item" data-page="orders">委托</div>
+            <div class="nav-item" data-page="analysis">分析</div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- 首页 -->
+        <div id="homePage" class="page active">
+            <div class="page-header">
+                <h1 class="page-title">数据概览</h1>
+                <p class="page-subtitle">实时追踪全网数字藏品交易数据</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">总市值</div>
+                    <div class="stat-value">¥30.5 亿</div>
+                    <div class="stat-trend trend-up">↑ +2.3%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">24h 成交量</div>
+                    <div class="stat-value">35,845</div>
+                    <div class="stat-trend trend-up">↑ +15.3%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">24h 成交额</div>
+                    <div class="stat-value">¥1.28 亿</div>
+                    <div class="stat-trend trend-down">↓ -3.2%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">活跃藏品</div>
+                    <div class="stat-value">1,284</div>
+                    <div class="stat-trend trend-up">↑ +12</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">🔥 热门藏品</div>
+                </div>
+                <div id="hotCollections"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">📈 最新成交</div>
+                </div>
+                <div id="recentTransactions"></div>
+            </div>
+        </div>
+
+        <!-- 藏品页 -->
+        <div id="collectionsPage" class="page">
+            <div class="page-header">
+                <h1 class="page-title">藏品列表</h1>
+                <p class="page-subtitle">全平台藏品数据汇总</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active">全部</div>
+                <div class="tab">鲸探</div>
+                <div class="tab">幻核</div>
+                <div class="tab">小红书</div>
+                <div class="tab">抖音</div>
+            </div>
+
+            <div class="section">
+                <div id="collectionsList"></div>
+            </div>
+        </div>
+
+        <!-- 成交页 -->
+        <div id="transactionsPage" class="page">
+            <div class="page-header">
+                <h1 class="page-title">成交记录</h1>
+                <p class="page-subtitle">实时交易数据监控</p>
+            </div>
+
+            <div class="section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>藏品</th>
+                            <th>价格</th>
+                            <th>数量</th>
+                            <th>总额</th>
+                            <th>平台</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 委托页 -->
+        <div id="ordersPage" class="page">
+            <div class="page-header">
+                <h1 class="page-title">委托记录</h1>
+                <p class="page-subtitle">挂单数据监控</p>
+            </div>
+
+            <div class="section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>类型</th>
+                            <th>藏品</th>
+                            <th>价格</th>
+                            <th>数量</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 分析页 -->
+        <div id="analysisPage" class="page">
+            <div class="page-header">
+                <h1 class="page-title">数据分析</h1>
+                <p class="page-subtitle">深度数据分析与趋势预测</p>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">📊 板块分布</div>
+                </div>
+                <div id="sectorAnalysis"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">📈 价格趋势</div>
+                </div>
+                <div id="priceTrend"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-item active" data-page="home">
+            <span>📊</span>
+            <span>首页</span>
+        </div>
+        <div class="bottom-nav-item" data-page="collections">
+            <span>🎨</span>
+            <span>藏品</span>
+        </div>
+        <div class="bottom-nav-item" data-page="transactions">
+            <span>💰</span>
+            <span>成交</span>
+        </div>
+        <div class="bottom-nav-item" data-page="orders">
+            <span>📋</span>
+            <span>委托</span>
+        </div>
+        <div class="bottom-nav-item" data-page="analysis">
+            <span>📈</span>
+            <span>分析</span>
+        </div>
+    </nav>
 
     <script>
-        const API_CONFIG = {
-            appId: 'a134eb307ad7429a9c5acd057f3de519',
-            baseUrl: 'https://xmeta.x-metash.cn/api'
-        };
-
+        // 模拟数据
         const mockData = {
             collections: [
-                { id: 1, name: '朱墨三色锦鲤', platform: '鲸探', price: 1.00, change: 2.5, volume: 422026, icon: '🎨', description: '故宫博物院联名数字藏品，采用传统工笔画技法绘制', source: '官方发行', releaseDate: '2026-01-15' },
-                { id: 2, name: '黑白双色锦鲤', platform: '鲸探', price: 1.42, change: -1.2, volume: 159059, icon: '🎨', description: '限量版数字锦鲤，寓意吉祥如意', source: '官方发行', releaseDate: '2026-02-01' },
-                { id: 3, name: '金刚菩提子', platform: '鲸探', price: 1.11, change: 0.8, volume: 40101, icon: '💎', description: '佛教文化数字藏品，象征智慧与力量', source: '文化 IP', releaseDate: '2026-01-20' },
-                { id: 4, name: '小金猫', platform: '鲸探', price: 30.18, change: 5.2, volume: 10331, icon: '🐱', description: '招财猫系列数字藏品，限量发行', source: '艺术家合作', releaseDate: '2026-02-10' },
-                { id: 5, name: '长春园铜麒麟', platform: '鲸探', price: 106.0, change: -2.1, volume: 254, icon: '🦄', description: '圆明园文物数字复刻，历史价值珍贵', source: '文物复刻', releaseDate: '2026-01-05' }
+                { id: 1, name: '朱墨三色锦鲤', platform: '鲸探', floorPrice: 1.00, change: 2.5, volume: 422026, totalValue: 422026 },
+                { id: 2, name: '黑白双色锦鲤', platform: '鲸探', floorPrice: 1.42, change: -1.2, volume: 159059, totalValue: 225864 },
+                { id: 3, name: '金刚菩提子', platform: '鲸探', floorPrice: 1.11, change: 0.8, volume: 40101, totalValue: 44512 },
+                { id: 4, name: '小金猫', platform: '鲸探', floorPrice: 30.18, change: 5.2, volume: 10331, totalValue: 311790 },
+                { id: 5, name: '长春园铜麒麟', platform: '鲸探', floorPrice: 106.0, change: -2.1, volume: 254, totalValue: 26924 }
             ],
-            releases: [
-                { id: 1, time: '今天 12:00', name: '晚来急雨添飞瀑图', platform: '鲸探', price: 60, limit: 8000, icon: '📅', description: '广州艺术博物院联名，限量 8000 份' },
-                { id: 2, time: '今天 12:00', name: '苏轼《楷书祭黄几道文》', platform: '鲸探', price: 60, limit: 8000, icon: '📅', description: '过云楼藏品数字化，书法爱好者必备' },
-                { id: 3, time: '明天 11:00', name: 'KOOMAN•贤勇将军李信', platform: '鲸探', price: 40, limit: 8000, icon: '📅', description: '苏展设计实验室出品，游戏 IP 联名' }
+            transactions: [
+                { time: '18:32:15', name: '朱墨三色锦鲤', price: 1.02, amount: 5, total: 5.10, platform: '鲸探' },
+                { time: '18:31:48', name: '小金猫', price: 30.50, amount: 2, total: 61.00, platform: '鲸探' },
+                { time: '18:30:22', name: '黑白双色锦鲤', price: 1.40, amount: 10, total: 14.00, platform: '鲸探' },
+                { time: '18:29:55', name: '金刚菩提子', price: 1.11, amount: 3, total: 3.33, platform: '鲸探' },
+                { time: '18:28:30', name: '长春园铜麒麟', price: 105.00, amount: 1, total: 105.00, platform: '鲸探' }
             ],
-            sources: [
-                { name: '36Kr', delay: '18s', weight: 0.9, active: true },
-                { name: 'The Verge', delay: '24s', weight: 0.8, active: true },
-                { name: 'TechCrunch', delay: '31s', weight: 0.6, active: false },
-                { name: 'Reddit', delay: '8s', weight: 0.7, active: true }
+            orders: [
+                { time: '18:33:00', type: '买入', name: '朱墨三色锦鲤', price: 1.00, amount: 10, status: 'pending' },
+                { time: '18:32:45', type: '卖出', name: '小金猫', price: 31.00, amount: 5, status: 'pending' },
+                { time: '18:32:20', type: '买入', name: '黑白双色锦鲤', price: 1.38, amount: 20, status: 'filled' },
+                { time: '18:31:55', type: '卖出', name: '金刚菩提子', price: 1.15, amount: 15, status: 'pending' },
+                { time: '18:31:30', type: '买入', name: '长春园铜麒麟', price: 104.00, amount: 2, status: 'filled' }
             ]
         };
 
-        let currentCollection = null;
+        // 页面切换
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(pageId + 'Page').classList.add('active');
+            document.querySelector(`.nav-item[data-page="${pageId}"]`)?.classList.add('active');
+            document.querySelector(`.bottom-nav-item[data-page="${pageId}"]`)?.classList.add('active');
+        }
 
-        function renderCollections() {
-            document.getElementById('collectionList').innerHTML = mockData.collections.map(c => `
-                <div class="list-item" onclick="showDetail('collection', ${c.id})">
+        // 渲染热门藏品
+        function renderHotCollections() {
+            document.getElementById('hotCollections').innerHTML = mockData.collections.slice(0, 5).map(c => `
+                <div class="list-item" onclick="switchPage('collections')">
                     <div class="item-left">
-                        <div class="item-icon">${c.icon}</div>
+                        <div class="item-icon">🎨</div>
                         <div class="item-info">
                             <div class="item-name">${c.name}</div>
-                            <div class="item-meta">
-                                <span>${c.platform}</span>
-                                <span>•</span>
-                                <span>在售 ${c.volume.toLocaleString()}</span>
-                            </div>
+                            <div class="item-meta">${c.platform} · 成交 ${c.volume.toLocaleString()}</div>
                         </div>
                     </div>
                     <div class="item-right">
-                        <div class="item-price">¥${c.price < 10 ? c.price.toFixed(2) : c.price.toLocaleString()}</div>
+                        <div class="item-price">¥${c.floorPrice.toFixed(2)}</div>
                         <div class="item-change" style="background: ${c.change >= 0 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${c.change >= 0 ? 'var(--success)' : 'var(--danger)'}">
                             ${c.change >= 0 ? '↑' : '↓'} ${Math.abs(c.change)}%
                         </div>
@@ -1148,163 +646,91 @@
             `).join('');
         }
 
-        function renderReleases() {
-            document.getElementById('releaseList').innerHTML = mockData.releases.map(r => `
-                <div class="list-item" onclick="showDetail('release', ${r.id})">
+        // 渲染最新成交
+        function renderRecentTransactions() {
+            document.getElementById('recentTransactions').innerHTML = mockData.transactions.map(t => `
+                <div class="list-item">
                     <div class="item-left">
-                        <div class="item-icon warning">${r.icon}</div>
+                        <div class="item-icon" style="background: linear-gradient(135deg, #10b981, #059669);">💰</div>
                         <div class="item-info">
-                            <div class="item-name">${r.name}</div>
-                            <div class="item-meta">
-                                <span>${r.time}</span>
-                                <span>•</span>
-                                <span>限量 ${r.limit}</span>
-                            </div>
+                            <div class="item-name">${t.name}</div>
+                            <div class="item-meta">${t.time} · ${t.platform}</div>
                         </div>
                     </div>
                     <div class="item-right">
-                        <div class="item-price">¥${r.price}</div>
+                        <div class="item-price">¥${t.total.toFixed(2)}</div>
+                        <div class="item-meta">${t.amount} 份 × ¥${t.price.toFixed(2)}</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderSources() {
-            document.getElementById('sourceList').innerHTML = mockData.sources.map(s => `
-                <div class="source-item">
-                    <div class="source-info">
-                        <div class="source-name">${s.name}</div>
-                        <div class="source-meta">延迟 ~ ${s.delay} · 权重 ${s.weight}</div>
+        // 渲染藏品列表
+        function renderCollections() {
+            document.getElementById('collectionsList').innerHTML = mockData.collections.map(c => `
+                <div class="list-item">
+                    <div class="item-left">
+                        <div class="item-icon">🎨</div>
+                        <div class="item-info">
+                            <div class="item-name">${c.name}</div>
+                            <div class="item-meta">${c.platform} · 总量 ${c.volume.toLocaleString()}</div>
+                        </div>
                     </div>
-                    <div class="toggle-switch ${s.active ? 'active' : ''}" onclick="this.classList.toggle('active')"></div>
+                    <div class="item-right">
+                        <div class="item-price">¥${c.floorPrice.toFixed(2)}</div>
+                        <div class="item-meta">市值 ¥${(c.totalValue/10000).toFixed(1)}万</div>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function showDetail(type, id) {
-            let data;
-            if (type === 'collection') {
-                data = mockData.collections.find(c => c.id === id);
-                currentCollection = data;
-                document.getElementById('detailTitle').textContent = data.name;
-                document.getElementById('detailContent').innerHTML = `
-                    <div class="detail-card">
-                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                            <div class="item-icon" style="width: 64px; height: 64px; font-size: 28px;">${data.icon}</div>
-                            <div>
-                                <div style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">${data.name}</div>
-                                <div class="source-badge">${data.platform}</div>
-                            </div>
-                        </div>
-                        <div style="color: var(--text-secondary); line-height: 1.6;">${data.description}</div>
-                        <div class="detail-stat-grid">
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">¥${data.price < 10 ? data.price.toFixed(2) : data.price.toLocaleString()}</div>
-                                <div class="detail-stat-label">当前价格</div>
-                            </div>
-                            <div class="detail-stat">
-                                <div class="detail-stat-value" style="color: ${data.change >= 0 ? 'var(--success)' : 'var(--danger)'}">
-                                    ${data.change >= 0 ? '↑' : '↓'} ${Math.abs(data.change)}%
-                                </div>
-                                <div class="detail-stat-label">24h 涨跌</div>
-                            </div>
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">${data.volume.toLocaleString()}</div>
-                                <div class="detail-stat-label">在售数量</div>
-                            </div>
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">${data.source}</div>
-                                <div class="detail-stat-label">数据来源</div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
-                            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">发行日期</div>
-                            <div style="font-weight: 600;">${data.releaseDate}</div>
-                        </div>
-                        <button class="detail-action-btn" onclick="alert('已添加到关注')">🔔 设置价格提醒</button>
-                    </div>
-                `;
-            } else if (type === 'release') {
-                data = mockData.releases.find(r => r.id === id);
-                document.getElementById('detailTitle').textContent = data.name;
-                document.getElementById('detailContent').innerHTML = `
-                    <div class="detail-card">
-                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                            <div class="item-icon warning" style="width: 64px; height: 64px; font-size: 28px;">${data.icon}</div>
-                            <div>
-                                <div style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">${data.name}</div>
-                                <div class="source-badge">${data.platform}</div>
-                            </div>
-                        </div>
-                        <div style="color: var(--text-secondary); line-height: 1.6;">${data.description}</div>
-                        <div class="detail-stat-grid">
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">${data.time}</div>
-                                <div class="detail-stat-label">发售时间</div>
-                            </div>
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">¥${data.price}</div>
-                                <div class="detail-stat-label">发售价格</div>
-                            </div>
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">${data.limit.toLocaleString()}</div>
-                                <div class="detail-stat-label">限量份数</div>
-                            </div>
-                            <div class="detail-stat">
-                                <div class="detail-stat-value">🔥</div>
-                                <div class="detail-stat-label">热度</div>
-                            </div>
-                        </div>
-                        <button class="detail-action-btn" onclick="alert('已设置开售提醒')">⏰ 开售提醒</button>
-                    </div>
-                `;
-            }
-            document.getElementById('detailPage').classList.add('active');
-            document.body.style.overflow = 'hidden';
+        // 渲染成交表格
+        function renderTransactionsTable() {
+            document.getElementById('transactionsTable').innerHTML = mockData.transactions.map(t => `
+                <tr>
+                    <td>${t.time}</td>
+                    <td>${t.name}</td>
+                    <td style="color: var(--primary); font-weight: 600;">¥${t.price.toFixed(2)}</td>
+                    <td>${t.amount}</td>
+                    <td>¥${t.total.toFixed(2)}</td>
+                    <td><span class="badge badge-success">${t.platform}</span></td>
+                </tr>
+            `).join('');
         }
 
-        function closeDetail() {
-            document.getElementById('detailPage').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        async function refreshData() {
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('content').style.display = 'none';
-            
-            try {
-                const response = await fetch(`${API_CONFIG.baseUrl}/v1/market/overview`, {
-                    headers: { 'X-App-ID': API_CONFIG.appId }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('真实数据:', data);
-                }
-            } catch (e) {
-                console.log('使用模拟数据');
-            }
-            
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                renderCollections();
-                renderReleases();
-                renderSources();
-            }, 600);
+        // 渲染委托表格
+        function renderOrdersTable() {
+            document.getElementById('ordersTable').innerHTML = mockData.orders.map(o => `
+                <tr>
+                    <td>${o.time}</td>
+                    <td style="color: ${o.type === '买入' ? 'var(--success)' : 'var(--danger)'}">${o.type}</td>
+                    <td>${o.name}</td>
+                    <td style="color: var(--primary); font-weight: 600;">¥${o.price.toFixed(2)}</td>
+                    <td>${o.amount}</td>
+                    <td><span class="badge ${o.status === 'filled' ? 'badge-success' : ''}">${o.status === 'filled' ? '已成交' : '挂单中'}</span></td>
+                </tr>
+            `).join('');
         }
 
         // 初始化
-        refreshData();
-        setInterval(refreshData, 60000);
+        function init() {
+            renderHotCollections();
+            renderRecentTransactions();
+            renderCollections();
+            renderTransactionsTable();
+            renderOrdersTable();
 
-        // 底部导航切换
-        document.querySelectorAll('.bottom-nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
+            // 导航事件
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => switchPage(item.dataset.page));
             });
-        });
+
+            document.querySelectorAll('.bottom-nav-item').forEach(item => {
+                item.addEventListener('click', () => switchPage(item.dataset.page));
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
