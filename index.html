@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XMeta 数字藏品分析系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #1a1c2e 0%, #2d1b4e 100%); color: #fff; min-height: 100vh; }
+        .header { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo { font-size: 24px; font-weight: 700; background: linear-gradient(90deg, #00d9ff, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .status { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0,255,136,0.2); border: 1px solid #00ff88; border-radius: 20px; font-size: 13px; }
+        .status-dot { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-label { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+        .stat-value { font-size: 36px; font-weight: 700; background: linear-gradient(90deg, #00d9ff, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-trend { font-size: 13px; margin-top: 8px; }
+        .trend-up { color: #00ff88; }
+        .trend-down { color: #ff4757; }
+        .section { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .collection-list { display: grid; gap: 12px; }
+        .collection-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; transition: background 0.2s; }
+        .collection-item:hover { background: rgba(255,255,255,0.1); }
+        .collection-info { display: flex; align-items: center; gap: 12px; }
+        .collection-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d9ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .collection-name { font-weight: 500; }
+        .collection-platform { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+        .collection-price { text-align: right; }
+        .price-value { font-size: 20px; font-weight: 600; color: #00d9ff; }
+        .price-change { font-size: 13px; margin-top: 4px; }
+        .loading { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.5); }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(0,217,255,0.2); border-top-color: #00d9ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .refresh-btn { background: linear-gradient(90deg, #00d9ff, #00ff88); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        .refresh-btn:hover { transform: scale(1.05); }
+        .refresh-btn:active { transform: scale(0.95); }
+        @media (max-width: 768px) { .header { padding: 16px 20px; flex-direction: column; gap: 16px; } .stats-grid { grid-template-columns: 1fr; } .collection-item { flex-direction: column; align-items: flex-start; gap: 12px; } .collection-price { text-align: left; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">📊 XMeta 分析系统</div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="status"><span class="status-dot"></span><span>实时监控中</span></div>
+            <button class="refresh-btn" onclick="refreshData()">🔄 刷新</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <div>正在加载数据...</div>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">总市值</div>
+                    <div class="stat-value" id="totalCap">¥30.5 亿</div>
+                    <div class="stat-trend trend-up" id="totalTrend">📈 +2.3%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">24h 交易量</div>
+                    <div class="stat-value" id="totalVolume">35,845</div>
+                    <div class="stat-trend trend-up" id="volumeTrend">📈 +15.3%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">追踪藏品</div>
+                    <div class="stat-value" id="collectionCount">10</div>
+                    <div class="stat-trend" style="color: rgba(255,255,255,0.6)">📊 实时</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">市场情绪</div>
+                    <div class="stat-value" id="marketSentiment">🐂 牛市</div>
+                    <div class="stat-trend trend-up" id="sentimentTrend">😊 乐观</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔥 热门藏品</div>
+                <div class="collection-list" id="collectionList"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📅 发售日历</div>
+                <div class="collection-list" id="releaseList"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📊 板块行情</div>
+                <div class="collection-list" id="sectorList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const mockData = {
+            market: { totalCap: 30.5, volume: 35845, trend: 2.3, sentiment: 'bullish' },
+            collections: [
+                { id: 1, name: '朱墨三色锦鲤', platform: '鲸探', price: 1.00, change: 2.5, volume: 422026 },
+                { id: 2, name: '黑白双色锦鲤', platform: '鲸探', price: 1.42, change: -1.2, volume: 159059 },
+                { id: 3, name: '金刚菩提子', platform: '鲸探', price: 1.11, change: 0.8, volume: 40101 },
+                { id: 4, name: '小金猫', platform: '鲸探', price: 30.18, change: 5.2, volume: 10331 },
+                { id: 5, name: '长春园铜麒麟', platform: '鲸探', price: 106.0, change: -2.1, volume: 254 },
+                { id: 6, name: '镇馆之宝 - 秦蕃禺漆盒', platform: '鲸探', price: 599, change: 10.5, volume: 22 }
+            ],
+            releases: [
+                { time: '今天 12:00', name: '晚来急雨添飞瀑图', platform: '鲸探', price: 60, limit: 8000 },
+                { time: '今天 12:00', name: '苏轼《楷书祭黄几道文》', platform: '鲸探', price: 60, limit: 8000 },
+                { time: '明天 11:00', name: 'KOOMAN•贤勇将军李信', platform: '鲸探', price: 40, limit: 8000 }
+            ],
+            sectors: [
+                { name: '个创板块', cap: 7.75, change: -0.05, volume: 1564 },
+                { name: '字画板块', cap: 6.60, change: -0.18, volume: 3686 },
+                { name: '文物板块', cap: 6.29, change: 0.38, volume: 2063 },
+                { name: '官方板块', cap: 4.15, change: -0.31, volume: 4893 },
+                { name: '祈福板块', cap: 3.29, change: -1.54, volume: 20667 }
+            ]
+        };
+
+        function renderCollections() {
+            document.getElementById('collectionList').innerHTML = mockData.collections.map(c => `
+                <div class="collection-item">
+                    <div class="collection-info">
+                        <div class="collection-icon">🎨</div>
+                        <div>
+                            <div class="collection-name">${c.name}</div>
+                            <div class="collection-platform">${c.platform} · 在售 ${c.volume.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="collection-price">
+                        <div class="price-value">¥${c.price < 10 ? c.price.toFixed(2) : c.price.toLocaleString()}</div>
+                        <div class="price-change ${c.change >= 0 ? 'trend-up' : 'trend-down'}">${c.change >= 0 ? '📈' : '📉'} ${c.change >= 0 ? '+' : ''}${c.change}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderReleases() {
+            document.getElementById('releaseList').innerHTML = mockData.releases.map(r => `
+                <div class="collection-item">
+                    <div class="collection-info">
+                        <div class="collection-icon">📅</div>
+                        <div>
+                            <div class="collection-name">${r.name}</div>
+                            <div class="collection-platform">${r.time} · ${r.platform} · 限量 ${r.limit}</div>
+                        </div>
+                    </div>
+                    <div class="collection-price">
+                        <div class="price-value">¥${r.price}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSectors() {
+            document.getElementById('sectorList').innerHTML = mockData.sectors.map(s => `
+                <div class="collection-item">
+                    <div class="collection-info">
+                        <div class="collection-icon">📊</div>
+                        <div>
+                            <div class="collection-name">${s.name}</div>
+                            <div class="collection-platform">市值 ¥${s.cap}亿 · 交易 ${s.volume}</div>
+                        </div>
+                    </div>
+                    <div class="collection-price">
+                        <div class="price-change ${s.change >= 0 ? 'trend-up' : 'trend-down'}">${s.change >= 0 ? '📈' : '📉'} ${s.change >= 0 ? '+' : ''}${s.change}%</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function refreshData() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+            
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                renderCollections();
+                renderReleases();
+                renderSectors();
+            }, 500);
+        }
+
+        // 初始化
+        refreshData();
+        setInterval(refreshData, 60000);
+    </script>
+</body>
+</html>
