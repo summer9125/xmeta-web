@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>藏品详情 - XMeta</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg-primary: #f5f7fa; --bg-secondary: #ffffff; --primary: #4f46e5; --primary-light: #818cf8;
+            --success: #10b981; --success-light: #a7f3d0; --danger: #ef4444; --danger-light: #fecaca;
+            --text-primary: #1f2937; --text-secondary: #6b7280; --text-tertiary: #9ca3af; --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.05); --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; -webkit-text-size-adjust: 100%; padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+        .detail-header { background: white; border-bottom: 1px solid var(--border); padding: calc(12px+var(--safe-top)) 16px 12px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-primary); border: none; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .back-btn:active { transform: scale(0.95); }
+        .detail-title { font-size: 17px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px 16px; }
+        @media (min-width: 768px) { .container { padding: 32px; } }
+        .card { background: var(--bg-secondary); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 16px; }
+        @media (min-width: 768px) { .card { padding: 24px; border-radius: 16px; margin-bottom: 24px; } }
+        .collection-header { display: flex; gap: 16px; margin-bottom: 20px; }
+        .collection-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 40px; flex-shrink: 0; }
+        .collection-info { flex: 1; min-width: 0; }
+        .collection-name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .collection-platform { display: inline-block; padding: 4px 10px; background: #e0e7ff; color: var(--primary); border-radius: 6px; font-size: 12px; font-weight: 500; }
+        .description { color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-top: 20px; }
+        @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4,1fr); } }
+        .stat-item { background: var(--bg-primary); padding: 16px; border-radius: 10px; text-align: center; }
+        .stat-value { font-size: 20px; font-weight: 700; color: var(--primary); }
+        @media (min-width: 640px) { .stat-value { font-size: 24px; } }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table th { text-align: left; padding: 12px; background: var(--bg-primary); color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--border); }
+        .data-table td { padding: 12px; border-bottom: 1px solid var(--border); }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+        .badge-success { background: var(--success-light); color: var(--success); }
+        .badge-danger { background: var(--danger-light); color: var(--danger); }
+        .action-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; }
+        .action-btn:active { transform: scale(0.98); }
+        .loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <header class="detail-header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <div class="detail-title" id="pageTitle">藏品详情</div>
+        <div style="width: 44px;"></div>
+    </header>
+
+    <main class="container">
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <div>正在加载藏品信息...</div>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- 藏品基本信息 -->
+            <div class="card">
+                <div class="collection-header">
+                    <div class="collection-icon" id="collectionIcon">🎨</div>
+                    <div class="collection-info">
+                        <div class="collection-name" id="collectionName">--</div>
+                        <div class="collection-platform" id="collectionPlatform">鲸探</div>
+                    </div>
+                </div>
+                <div class="description" id="collectionDescription">加载中...</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="floorPrice">--</div>
+                        <div class="stat-label">地板价</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="issuePrice">--</div>
+                        <div class="stat-label">发行价</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="holders">--</div>
+                        <div class="stat-label">持有者</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="listedCount">--</div>
+                        <div class="stat-label">挂单量</div>
+                    </div>
+                </div>
+                <button class="action-btn" onclick="alert('已添加到关注')">🔔 设置价格提醒</button>
+            </div>
+
+            <!-- 最近成交 -->
+            <div class="card">
+                <div class="section-title">💰 最近成交</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>价格</th>
+                            <th>数量</th>
+                            <th>总额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTable"></tbody>
+                </table>
+            </div>
+
+            <!-- 委托记录 -->
+            <div class="card">
+                <div class="section-title">📋 委托记录</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>类型</th>
+                            <th>价格</th>
+                            <th>数量</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="api.js"></script>
+    <script>
+        const collectionId = new URLSearchParams(window.location.search).get('id');
+        const collectionName = new URLSearchParams(window.location.search).get('name');
+        
+        // 模拟数据
+        const mockCollection = {
+            id: collectionId || '1',
+            name: collectionName || '朱墨三色锦鲤',
+            platform: '鲸探',
+            description: '故宫博物院联名数字藏品，采用传统工笔画技法绘制，限量发行 50000 份。藏品融合了中国传统文化与现代数字艺术，具有独特的收藏价值。',
+            floorPrice: 1.00,
+            issuePrice: 0.50,
+            holders: 15234,
+            listedCount: 421478,
+            change24h: 2.5
+        };
+
+        const mockTransactions = [
+            { tradeTime: '2026-03-11T18:32:15+08:00', price: 1.02, amount: 5, total: 5.10 },
+            { tradeTime: '2026-03-11T18:30:22+08:00', price: 1.00, amount: 3, total: 3.00 },
+            { tradeTime: '2026-03-11T18:28:45+08:00', price: 0.99, amount: 10, total: 9.90 },
+            { tradeTime: '2026-03-11T18:25:30+08:00', price: 1.01, amount: 2, total: 2.02 },
+            { tradeTime: '2026-03-11T18:22:15+08:00', price: 1.00, amount: 8, total: 8.00 }
+        ];
+
+        const mockOrders = [
+            { createdAt: '2026-03-11T18:33:00+08:00', type: 'buy', price: 1.00, amount: 10, status: 'pending' },
+            { createdAt: '2026-03-11T18:32:45+08:00', type: 'sell', price: 1.05, amount: 5, status: 'pending' },
+            { createdAt: '2026-03-11T18:32:20+08:00', type: 'buy', price: 0.98, amount: 20, status: 'filled' },
+            { createdAt: '2026-03-11T18:31:55+08:00', type: 'sell', price: 1.08, amount: 15, status: 'pending' },
+            { createdAt: '2026-03-11T18:31:30+08:00', type: 'buy', price: 0.99, amount: 12, status: 'filled' }
+        ];
+
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function renderCollection(collection) {
+            document.getElementById('pageTitle').textContent = collection.name;
+            document.getElementById('collectionName').textContent = collection.name;
+            document.getElementById('collectionPlatform').textContent = collection.platform;
+            document.getElementById('collectionDescription').textContent = collection.description;
+            document.getElementById('floorPrice').textContent = '¥' + collection.floorPrice.toFixed(2);
+            document.getElementById('issuePrice').textContent = '¥' + collection.issuePrice.toFixed(2);
+            document.getElementById('holders').textContent = collection.holders.toLocaleString();
+            document.getElementById('listedCount').textContent = collection.listedCount.toLocaleString();
+        }
+
+        function renderTransactions(transactions) {
+            document.getElementById('transactionsTable').innerHTML = transactions.map(t => `
+                <tr>
+                    <td>${formatTime(t.tradeTime)}</td>
+                    <td style="color:var(--primary);font-weight:600">¥${t.price.toFixed(2)}</td>
+                    <td>${t.amount}</td>
+                    <td>¥${t.total.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderOrders(orders) {
+            document.getElementById('ordersTable').innerHTML = orders.map(o => `
+                <tr>
+                    <td>${formatTime(o.createdAt)}</td>
+                    <td style="color:${o.type==='buy'?'var(--success)':'var(--danger)'}">${o.type==='buy'?'买入':'卖出'}</td>
+                    <td style="color:var(--primary);font-weight:600">¥${o.price.toFixed(2)}</td>
+                    <td>${o.amount}</td>
+                    <td><span class="badge ${o.status==='filled'?'badge-success':''}">${o.status==='filled'?'✅':'⏳'}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadCollectionData() {
+            try {
+                // 尝试从 API 获取真实数据
+                const collection = await window.XMetaAPI?.getCollections?.(null, 100).then(collections => {
+                    return (collections.list || collections).find(c => c.id === collectionId);
+                }).catch(() => null);
+
+                if (collection) {
+                    renderCollection(collection);
+                    console.log('✅ 真实数据加载成功');
+                } else {
+                    renderCollection(mockCollection);
+                    console.log('⚠️ 使用模拟数据');
+                }
+            } catch (error) {
+                renderCollection(mockCollection);
+                console.error('❌ 数据加载失败:', error);
+            }
+
+            // 渲染表格
+            renderTransactions(mockTransactions);
+            renderOrders(mockOrders);
+
+            // 隐藏加载动画
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        // 初始化
+        loadCollectionData();
+    </script>
+</body>
+</html>
