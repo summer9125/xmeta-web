@@ -99,6 +99,29 @@
     </main>
 
     <script>
+        const API_CONFIG = {
+            appId: 'a134eb307ad7429a9c5acd057f3de519',
+            baseUrl: 'https://xmeta.x-metash.cn/api'
+        };
+
+        let realData = null;
+
+        async function fetchRealData() {
+            try {
+                const response = await fetch(`${API_CONFIG.baseUrl}/v1/market/overview`, {
+                    headers: {
+                        'X-App-ID': API_CONFIG.appId
+                    }
+                });
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (e) {
+                console.log('API 请求失败，使用模拟数据');
+            }
+            return null;
+        }
+
         const mockData = {
             market: { totalCap: 30.5, volume: 35845, trend: 2.3, sentiment: 'bullish' },
             collections: [
@@ -175,17 +198,18 @@
             `).join('');
         }
 
-        function refreshData() {
+        async function refreshData() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('content').style.display = 'none';
             
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                renderCollections();
-                renderReleases();
-                renderSectors();
-            }, 500);
+            // 尝试获取真实数据
+            realData = await fetchRealData();
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            renderCollections();
+            renderReleases();
+            renderSectors();
         }
 
         // 初始化
